@@ -1,0 +1,663 @@
+'use-strict';
+
+var googletag = googletag || {};
+googletag.cmd = googletag.cmd || [];
+
+window.addEventListener('DOMContentLoaded', dfpNativeEventHandler);
+
+function dfpNativeEventHandler() {
+  console.log('DFP DOMContentLoaded Scripts');
+
+  var mobileOverlaySelector = '#ads-Mobile_cover > div > iframe';
+  var middleAdsSelector = '#ads-inline > div > iframe';
+  var stickyAdsSelector = '#stickyAds > div > iframe';
+  var welcomeVideoSelector = '#div-gpt-ad-1497513578327-0 > div > iframe'; // not for sales in 2020 version
+  var billboardSelector = '#ultraDesktopBanner > div > iframe';
+  var superBannerDIV = document.getElementById('ads-superBanner');
+  var wrapperAsideDIV = document.querySelector('.wrapper-aside');
+  var isBrandNewSite = document.querySelector('.main-content');
+
+  var closeEventSet = false;
+  var middleDiv = document.getElementById('ads-inline') || null;
+  var stickyAds = '#stickyAds';
+  var supportPageOffset = window.pageXOffset !== undefined;
+  var isCSS1Compat = (document.compatMode || '') === 'CSS1Compat';
+  var ratio;
+  var documentHeight = window.innerHeight;
+  var documentWidth = window.innerWidth;
+  var overlayContainer = '.udn-overlay';
+
+  var checkSbSite = document.getElementById('sb-site'); // just for nba native bottom height check;
+
+  function adStatus(type) {
+    visibilityHelper(type, mobileOverlaySelector);
+    callAds(type, mobileOverlaySelector);
+  }
+
+  function toggleOverlayVisibility(type) {
+    visibilityHelper(type, overlayContainer);
+  }
+
+  function visibilityHelper(type, el) {
+    var visibility = type === 'close' ? 'hidden' : 'visible';
+    var opacity = type === 'close' ? 0 : 1;
+    document.querySelector(el).style.visibility = visibility;
+    document.querySelector(el).style.opacity = opacity;
+    document.querySelector(el).style.zIndex = '35';
+    if (type === 'close') {
+      setTimeout(function() {
+        let coverAds = document.querySelector('#ads-Mobile_cover');
+        if (coverAds) {
+          coverAds.parentElement.removeChild(coverAds);
+        }
+        // coverAds.querySelector('div').innerHTML = '';
+      }, 400);
+    }
+  }
+
+  function callAds(type, selector) {
+    document.querySelector(selector).contentWindow.postMessage(
+      {
+        type: 'setAds',
+        value: type,
+        width: window.innerWidth,
+      },
+      '*'
+    );
+  }
+
+  function scrollEventHandler(observer) {
+    var rect = document.querySelector(middleAdsSelector).getBoundingClientRect()
+      .top;
+    if (rect <= visibleRatio()) {
+      callAds('big', middleAdsSelector);
+      window.removeEventListener('scroll', scrollEventHandler);
+    }
+  }
+
+  function visibleRatio() {
+    return documentHeight * (ratio / 10);
+  }
+
+  function registerPushDownEvent() {
+    console.log('register push down event');
+    var target = document.querySelector(middleAdsSelector);
+    if ('IntersectionObserver' in window) {
+      var config = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 1,
+      };
+
+      var io = new IntersectionObserver(onChange, config);
+
+      function onChange(entries, observer) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            // console.log('isIntersecting');
+            // when full visible in view
+            if (entry.intersectionRatio > 0) {
+              // minor event upon intersecting
+              window.addEventListener('scroll', function namedFunction() {
+                var rect = document
+                  .querySelector(middleAdsSelector)
+                  .getBoundingClientRect().top;
+                if (rect <= visibleRatio()) {
+                  callAds('big', middleAdsSelector);
+                  window.removeEventListener('scroll', namedFunction);
+                  observer.disconnect();
+                }
+              });
+            }
+          }
+        });
+      }
+
+      io.observe(target);
+    } else {
+      // traditional ways
+      window.addEventListener('scroll', scrollEventHandler);
+    }
+  }
+
+  function registerUnderlayEvent() {
+    console.log('register underlay event');
+
+    var checkpoint = document.querySelector('.inline-ads');
+    console.log('checkpoint', checkpoint);
+    // var width = window.innerWidth;
+    document.body.classList.add('underlay');
+
+    document.addEventListener('scroll', function(e) {
+      middleDiv.classList.add('intersecting');
+      var clientBound = checkpoint.getBoundingClientRect().top + 20;
+      var documentHeight = window.innerHeight;
+      var clientBottom = clientBound + documentHeight;
+      console.log(documentHeight);
+
+      middleDiv.setAttribute(
+        'style',
+        'clip: rect('
+          .concat(clientBound, 'px ')
+          .concat(documentWidth, 'px ')
+          .concat(clientBottom, 'px 0px)')
+      );
+      // middleDiv.setAttribute('style', `clip-path: inset(${clientBound}px ${documentWidth}px ${clientBottom}px 0px)`);
+      // middleDiv.setAttribute('style', `-webkit-clip-path: inset(${clientBound}px 0 ${(-clientBound)}px 0); clip-path: inset(${clientBound}px 0 ${(-clientBound)}px 0);`);
+    });
+  }
+
+  function setEventToFrame(type) {
+    console.log('setEventToFrame', type);
+    document.querySelector(stickyAdsSelector).contentWindow.postMessage(
+      {
+        type: type,
+      },
+      '*'
+    );
+  }
+
+  function pullUpEventRegister() {
+    console.log('pull up event registered');
+    document.querySelector(stickyAds).classList.add('pull-up');
+
+    var stickyAdsBanner = document.querySelector(stickyAds);
+    var banner;
+    var secondItem;
+    var bannerTpl;
+
+    // drag state
+    var dragging = false;
+    var isFinalDragPositionAsUp = false;
+    var initPosition;
+    var dragStartPosition;
+    var dragEndPosition;
+    var dragRatio = 100;
+
+    function createTemplate(bigBanner, smallBanner, link) {
+      bannerTpl = document.createElement('div');
+      banner = bannerTpl;
+      bannerTpl.className = 'bannerAds';
+      var smallBannerTpl = document.createElement('div');
+      smallBannerTpl.className = 'small-banner';
+      var smallBannerImg = document.createElement('img');
+      smallBannerImg.src = smallBanner;
+      var secondaryTpl = document.createElement('div');
+      secondaryTpl.className = 'secondary-item';
+      secondItem = secondaryTpl;
+      var closeBtnTpl = document.createElement('div');
+      closeBtnTpl.className = 'close-btn';
+      var closeBtnIcon = document.createElement('i');
+      closeBtnIcon.className = 'i-close';
+      var linkTagTpl = document.createElement('a');
+      linkTagTpl.className = 'ads-action';
+      linkTagTpl.href = link;
+      var bigBannerImg = document.createElement('img');
+      bigBannerImg.src = bigBanner;
+
+      smallBannerTpl.appendChild(smallBannerImg);
+      bannerTpl.appendChild(smallBannerTpl);
+
+      closeBtnTpl.appendChild(closeBtnIcon);
+      linkTagTpl.appendChild(bigBannerImg);
+
+      secondaryTpl.appendChild(closeBtnTpl);
+      secondaryTpl.appendChild(linkTagTpl);
+
+      bannerTpl.appendChild(secondaryTpl);
+
+      smallBannerTpl.addEventListener(
+        'touchstart',
+        function(e) {
+          var touch = e.targetTouches[0];
+          initPosition = stickyAdsBanner.offsetTop;
+          dragStartPosition = touch.clientY;
+          document.body.classList.add('lock-scroll'); // lock overflow scroll;
+          dragging = true;
+        },
+        { passive: true }
+      );
+
+      closeBtnTpl.addEventListener('click', function(e) {
+        e.preventDefault();
+        closeFullAds();
+      });
+
+      stickyAdsBanner.parentNode.insertBefore(
+        bannerTpl,
+        stickyAdsBanner.nextSibling
+      );
+    }
+
+    window.addEventListener('message', function(e) {
+      if (e.data.type === '[pullup] ready') {
+        createTemplate(e.data.largeBanner, e.data.smallBanner, e.data.adsLink);
+      }
+    });
+
+    document.addEventListener(
+      'touchmove',
+      function(e) {
+        if (!dragging) return;
+        var touch = e.targetTouches[0];
+        if (banner.style.height >= 50) return;
+
+        var value = initPosition + touch.clientY - dragStartPosition;
+        var top = value + 'px';
+        var height = 50 + (dragStartPosition - touch.clientY) + 'px';
+
+        banner.style.top = top;
+        banner.style.height = height;
+
+        isFinalDragPositionAsUp =
+          dragEndPosition > touch.clientY ? true : false; // detect if touch upward or downward
+        dragEndPosition = touch.clientY; // set final value for move end position
+        // console.log('touchmove', `moveValue: ${touch.clientY}`);
+      },
+      false
+    );
+
+    document.addEventListener('touchend', function(e) {
+      if (!dragging) return;
+      console.log('touchend called, draggingState: ', dragging);
+      var draggedRange = dragStartPosition - dragEndPosition;
+      banner.classList.add('animate');
+      if (draggedRange > dragRatio && isFinalDragPositionAsUp) {
+        openFullAds();
+      } else {
+        closeFullAds();
+      }
+      dragging = false;
+      console.log('touchend', dragging);
+    });
+
+    function openFullAds() {
+      console.log('expand');
+      var top = '-50px';
+      var height = 'calc(100vh + 50px)';
+      bodyScrollLock.disableBodyScroll(bannerTpl);
+      banner.style.top = top;
+      banner.style.height = height;
+
+      secondItem.classList.add('visible');
+      // dragging = false;
+    }
+
+    function closeFullAds() {
+      console.log('retract');
+
+      // var top = (window.innerHeight - 50)  + 'px';
+      var top = 'initial';
+      var height = '50px';
+
+      dragStartPosition = 0;
+      dragEndPosition = 0;
+
+      banner.style.top = top;
+      banner.style.height = height;
+
+      secondItem.classList.remove('visible');
+      bodyScrollLock.enableBodyScroll(bannerTpl);
+
+      setTimeout(function() {
+        banner.classList.remove('animate');
+      }, 500);
+      document.body.classList.remove('lock-scroll');
+    }
+  }
+
+  function doubleDeckerEventRegister() {
+    console.log('double decker event registered');
+    document.querySelector(stickyAds).classList.add('double-decker');
+
+    var bannerShow = false;
+
+    var bannerOffset = 100;
+
+    window.addEventListener('message', function(e) {
+      if (e.data.type === '[double-decker] setHeight') {
+        console.log('parent receive with heightData: ', e.data);
+        document
+          .querySelector(stickyAdsSelector)
+          .setAttribute('height', e.data.height);
+
+        if (e.data.height <= 0) {
+          document
+            .querySelector(stickyAds)
+            .setAttribute('style', 'min-height: 0;');
+        } else {
+          document
+            .querySelector(stickyAds)
+            .setAttribute('style', 'min-height: inherit;');
+          document.querySelector(stickyAds).setAttribute('style', 'bottom: 0');
+        }
+      }
+      if (e.data.type === '[double-decker] ready') {
+        console.log('parent receive with domReady: ', e.data);
+        var height = Math.round(window.innerWidth / e.data.ratio);
+
+        bannerOffset = e.data.bannerOffset;
+        document
+          .querySelector(stickyAds)
+          .setAttribute('style', 'bottom: -' + height + 'px');
+        window.addEventListener('scroll', scrollTrigger);
+      }
+
+      if (e.data.type === '[double-decker] close') {
+        secondaryItemState = false;
+      }
+    });
+
+    function scrollTrigger() {
+      var y = supportPageOffset
+        ? window.pageYOffset
+        : isCSS1Compat
+        ? document.documentElement.scrollTop
+        : document.body.scrollTop;
+      if (y >= bannerOffset) {
+        if (bannerShow) return;
+        var bottomEnd = checkSbSite ? 40 : 0;
+        document
+          .querySelector(stickyAds)
+          .setAttribute('style', 'bottom: ' + bottomEnd + 'px');
+        if (!bannerShow) setEventToFrame('[double-decker] commitHeightEvent');
+        bannerShow = true;
+
+        // window.removeEventListener('scroll', scrollTrigger);
+      } else {
+        if (!bannerShow) return;
+        var bottomHeight = document.querySelector(stickyAdsSelector)
+          .scrollHeight;
+        bannerShow = false;
+        document
+          .querySelector(stickyAds)
+          .setAttribute('style', 'bottom: -' + bottomHeight + 'px');
+        setEventToFrame('[double-decker] closeBanner');
+      }
+    }
+  }
+
+  function stickyAdsVisibilityScrollEvent(ads) {
+    document.querySelector(stickyAds).classList.add('native');
+    window.addEventListener('scroll', function() {
+      var y = supportPageOffset
+        ? window.pageYOffset
+        : isCSS1Compat
+        ? document.documentElement.scrollTop
+        : document.body.scrollTop;
+      var checkWhichNativeStickyAds =
+        document.querySelector('.innity-apps-spin-inv-ad') ||
+        document.querySelector('.innity-apps-overlay-card-ad') ||
+        document.querySelector(ads);
+      if (y >= 100) {
+        checkWhichNativeStickyAds.classList.add('visible');
+      } else {
+        checkWhichNativeStickyAds.classList.remove('visible');
+      }
+    });
+  }
+
+  function displayAds(iframeSelector) {
+    document.querySelector(iframeSelector).style.visibility = 'visible';
+    document.querySelector(iframeSelector).style.opacity = 1;
+    callAds('open', iframeSelector);
+  }
+
+  function closeAds(iframeSelector) {
+    document.querySelector(iframeSelector).style.visibility = 'hidden';
+    document.querySelector(iframeSelector).style.opacity = 0;
+    callAds('close', iframeSelector);
+  }
+
+  function setBillboardAds() {
+    if (sessionStorage) {
+      var getStorageValue =
+        sessionStorage.getItem('udnAdsOverlay') === 'true' ? true : false;
+      if (!getStorageValue) {
+        sessionStorage.setItem('udnAdsOverlay', 'true');
+        document.querySelector(billboardSelector).contentWindow.postMessage(
+          {
+            type: 'setAds',
+            value: 'big',
+          },
+          '*'
+        );
+      } else {
+        document.querySelector(billboardSelector).contentWindow.postMessage(
+          {
+            type: 'setAds',
+            value: 'small',
+          },
+          '*'
+        );
+      }
+    } else {
+      document.querySelector(billboardSelector).contentWindow.postMessage(
+        {
+          type: 'setAds',
+          value: 'small',
+        },
+        '*'
+      );
+    }
+  }
+
+  function registerNativeSticky() {
+    console.log('sticky native');
+    document.querySelector(stickyAds).classList.add('sticky-native');
+    var bannerOffset = 100;
+    var nativeStickyHeight;
+
+    window.addEventListener('message', function(e) {
+      if (e.data.type === '[sticky-native] ready') {
+        nativeStickyHeight = e.data.height;
+        document
+          .querySelector(stickyAds)
+          .setAttribute('style', 'bottom: -' + nativeStickyHeight + 'px');
+        window.addEventListener('scroll', scrollTrigger);
+      }
+
+      if (e.data.type === '[sticky-native] close') {
+        document
+          .querySelector(stickyAds)
+          .setAttribute('style', 'bottom: -' + nativeStickyHeight + 'px');
+        window.removeEventListener('scroll', scrollTrigger);
+        setTimeout(function() {
+          document.querySelector(stickyAdsSelector).remove();
+        }, 500);
+      }
+    });
+
+    function scrollTrigger() {
+      var y = supportPageOffset
+        ? window.pageYOffset
+        : isCSS1Compat
+        ? document.documentElement.scrollTop
+        : document.body.scrollTop;
+      if (y >= bannerOffset) {
+        console.log('hit me');
+        document.querySelector(stickyAds).setAttribute('style', 'bottom: 0px');
+        // document.querySelector(stickyAdsSelector).setAttribute('height', nativeStickyHeight);
+      } else {
+        var bottomHeight = document.querySelector(stickyAdsSelector)
+          .scrollHeight;
+        document
+          .querySelector(stickyAds)
+          .setAttribute('style', 'bottom: -' + bottomHeight + 'px');
+      }
+    }
+  }
+
+  // push display event;
+  googletag.cmd.push(function() {
+    googletag
+      .pubads()
+      .addEventListener('slotResponseReceived', function(event) {
+        // console.log('event received', event, event.slot.getSlotElementId());
+      });
+
+    googletag.pubads().addEventListener('slotRenderEnded', function(event) {
+      var slotId = event.slot.getSlotElementId();
+      console.log('googleNative slotRenderEnded', slotId);
+
+      if (slotId === 'ads-superBanner') {
+        console.log('superBanner', event.creativeTemplateId);
+        if (event.isEmpty) {
+          var mainContent = document.querySelector('.main-content');
+          if (mainContent) mainContent.classList.add('reset-aside');
+        }
+      }
+
+      // middle event
+      if (slotId === 'ads-inline') {
+        console.log('middle slot event', event);
+        if (!event.isEmpty) {
+          if (event.creativeTemplateId) {
+            // REGISTER EVENT WITH CREATIVE TEMPLATE ID
+            if (event.creativeTemplateId === 11821167) registerPushDownEvent();
+            if (
+              event.creativeTemplateId === 11789735 ||
+              event.creativeTemplateId === 11844776 ||
+              event.creativeTemplateId === 11862837 ||
+              event.creativeTemplateId === 11863140
+            )
+              registerUnderlayEvent();
+          }
+        } else {
+          document.querySelector('.inline-ads').style.display = 'none';
+        }
+      }
+
+      // sticky event
+      if (slotId === 'stickyAds') {
+        console.log('sticky slot event', event);
+        // console.log('lineItemId: ' + event.lineItemId + ' creativeId: ' + event.creativeId + ' slotId: ' + slotId + ' is rendered to slot of size: ' + event.size[0] + 'x' + event.size[1]);
+        if (
+          event.creativeTemplateId === 11831547 ||
+          event.creativeTemplateId === 11840522 ||
+          event.creativeTemplateId === 11889012 ||
+          event.creativeTemplateId === 11867400 ||
+          event.creativeTemplateId === 11867409
+        ) {
+          // doubleDeckerEventRegister(event.creativeTemplateId === 11840522 ? true : false);
+          doubleDeckerEventRegister(true);
+        } else if (event.creativeTemplateId === 11850463) {
+          pullUpEventRegister();
+          stickyAdsVisibilityScrollEvent('.bannerAds');
+        } else if (event.creativeTemplateId === 11862770) {
+          // register scroll event
+          registerNativeSticky();
+          // stickyAdsVisibilityScrollEvent(stickyAds);
+        } else {
+          stickyAdsVisibilityScrollEvent(stickyAds);
+        }
+
+        document.body.style.paddingBottom =
+          document.querySelector(stickyAds).clientHeight + 'px';
+      }
+
+      if (slotId === 'ultraDesktopBanner') {
+        // console.log('lineItemId: ' + event.lineItemId + ' creativeId: ' + event.creativeId + ' slotId: ' + slotId + ' is rendered to slot of size: ' + event.size[0] + 'x' + event.size[1]);
+        window.addEventListener('message', function(e) {
+          // console.log('iframe child emitter: ', e);
+
+          if (e.data.type === 'desktopExpandHeight') {
+            //console.log("parent receive with heightData: ", e.data);
+            document
+              .querySelector(billboardSelector)
+              .setAttribute('height', e.data.height);
+
+            if (isBrandNewSite) {
+              if ('calcNavTop' in window.__UDN__) window.__UDN__.calcNavTop();
+            }
+          }
+          if (e.data.type === 'desktopExpandReady') {
+            //console.log("parent receive with domReady: ", e.data);
+            setBillboardAds();
+          }
+        });
+      }
+    });
+  });
+
+  // iframe message listener
+  window.addEventListener('message', function(e) {
+    var superBannerIframe = superBannerDIV
+      ? superBannerDIV.querySelector('iframe')
+      : '';
+
+    if (e.data.type === '[inpage] initHeight') {
+      console.log('[inpage]', e.data.value);
+      var heightValue = e.data.value || 400;
+      superBannerDIV.style.setProperty('--varHeight', heightValue + 'px');
+      if (wrapperAsideDIV) {
+        wrapperAsideDIV.style.setProperty('--top', heightValue + 'px');
+      }
+    }
+    if (e.data.type === '[inpage] close') {
+      console.log('[inpage] close', wrapperAsideDIV);
+
+      superBannerDIV.className += ' closing';
+      if (wrapperAsideDIV) {
+        console.log('set frame to 0 height');
+        wrapperAsideDIV.style.setProperty('--top', '0px');
+      }
+      superBannerIframe.contentWindow.postMessage(
+        {
+          type: '[inpage] removeAds',
+        },
+        '*'
+      );
+      while (superBannerDIV.firstChild) {
+        superBannerDIV.firstChild.parentNode.removeChild(
+          superBannerDIV.firstChild
+        );
+      }
+    }
+
+    if (e.data.type === 'overlayIframeReady') {
+      console.log('open overlay', e.data);
+
+      toggleOverlayVisibility('open');
+      adStatus('open');
+      window.dispatchEvent(new Event('resize'));
+      if (e.data.opt.overlayClose && !closeEventSet) {
+        closeEventSet = true;
+        document
+          .querySelector(overlayContainer)
+          .addEventListener('click', function() {
+            toggleOverlayVisibility('close');
+            adStatus('close');
+          });
+      }
+    }
+
+    if (e.data.type === 'desktopOverlayIframeReady') {
+      // console.log('[DEBUG] parent receive with domReady: ', e.data);
+      displayAds(welcomeVideoSelector);
+    }
+
+    if (e.data.type === 'desktopOverlayClose') {
+      //close
+      //console.log('[DEBUG] parent receive with domReady: ', e.data);
+      closeAds(welcomeVideoSelector);
+    }
+
+    if (e.data.type === 'adClose') {
+      toggleOverlayVisibility('close');
+      adStatus('close');
+    }
+
+    if (e.data.type === '[push-down] setHeight') {
+      //console.log("parent receive with heightData: ", e.data);
+      document
+        .querySelector(middleAdsSelector)
+        .setAttribute('height', e.data.height);
+    }
+
+    if (e.data.type === '[push-down] ready') {
+      //console.log("parent receive with domReady: ", e.data);
+      ratio = e.data.visibleRatio || 5;
+    }
+  });
+}

@@ -1,0 +1,89 @@
+/*
+ * 移動端模擬導航可點擊自動滑動 0.1.4
+ * Date: 2017-01-11
+ * by: xiewei
+ * 導航可左右滑動，可點擊邊緣的一個，自動滾動下一個到可視範圍【依賴於iscroll.js】
+ */
+(function ($) {
+    $.fn.navbarscroll = function (options) {
+        //各種屬性、參數
+        var _defaults = {
+            className:'cur', //當前選中點擊元素的class類名
+            clickScrollTime:300, //點擊後滑動時間
+            duibiScreenWidth:0.4, //單位以rem為準，默認為0.4rem
+            scrollerWidth:3, //單位以px為準，默認為3,[僅用於持殊情況：外層寬度因為小數點造成的不精準情況]
+            defaultSelect:0, //初始選中第n個，默認第0個
+            fingerClick:0, //目標第0或1個選項觸發,必須每一項長度一致，方可用此項
+            endClickScroll:function(thisObj){}//回調函數
+        }
+        var _opt = $.extend(_defaults, options);
+        this.each(function () {
+            //插件實現代碼
+            var _wrapper = $(this);
+            var _win = $(window);
+            var _win_width = _win.width(),_wrapper_width = _wrapper.width(),_wrapper_off_left = _wrapper.offset().left;
+            var _wrapper_off_right=_win_width-_wrapper_off_left-_wrapper_width;
+            var _obj_scroller = _wrapper.children().first();
+            var _obj_ul = _obj_scroller.children('ul');
+            var _obj_li = _obj_ul.children('li');
+            var _scroller_w = 0;
+            //_obj_li.css({"margin-left":"0","margin-right":"0"});
+            for (var i = 0; i < _obj_li.length; i++) {
+                _scroller_w += _obj_li[i].offsetWidth;
+            }
+            _obj_scroller.width(_scroller_w+_opt.scrollerWidth);
+            var myScroll = new IScroll('#'+_wrapper.attr('id'), {
+                eventPassthrough: true,
+                scrollX: true,
+                scrollY: false,
+                preventDefault: false
+            });
+            _init(_obj_li.eq(_opt.defaultSelect));
+            _obj_li.click(function(){
+                _init($(this));
+            });
+			//解决PC端谷歌瀏覽器模擬的手機屏幕出現莫名的卡頓現象，滑動時禁止默認事件（2017-01-11）
+			_wrapper[0].addEventListener('touchmove',function (e){e.preventDefault();},false);
+            function _init(thiObj){
+                var $this_obj=thiObj;
+                var duibi=_opt.duibiScreenWidth*_win_width/10,this_index=$this_obj.index(),this_off_left=$this_obj.offset().left,this_pos_left=$this_obj.position().left,this_width=$this_obj.width(),this_prev_width=$this_obj.prev('li').width(),this_next_width=$this_obj.next('li').width();
+                var this_off_right=_win_width-this_off_left-this_width;
+                if(_scroller_w+2>_wrapper_width){
+                    if(_opt.fingerClick==1){
+                        if(this_index==1){
+                            myScroll.scrollTo(-this_pos_left+this_prev_width,0, _opt.clickScrollTime);
+                        }else if(this_index==0){
+                            myScroll.scrollTo(-this_pos_left,0, _opt.clickScrollTime);
+                        }else if(this_index==_obj_li.length-2){
+                            myScroll.scrollBy(this_off_right-_wrapper_off_right-this_width,0, _opt.clickScrollTime);
+                        }else if(this_index==_obj_li.length-1){
+                            myScroll.scrollBy(this_off_right-_wrapper_off_right,0, _opt.clickScrollTime);
+                        }else{
+                            if(this_off_left-_wrapper_off_left-(this_width*_opt.fingerClick)<duibi){
+                                myScroll.scrollTo(-this_pos_left+this_prev_width+(this_width*_opt.fingerClick),0, _opt.clickScrollTime);
+                            }else if(this_off_right-_wrapper_off_right-(this_width*_opt.fingerClick)<duibi){
+                                myScroll.scrollBy(this_off_right-this_next_width-_wrapper_off_right-(this_width*_opt.fingerClick),0, _opt.clickScrollTime);
+                            }
+                        }
+                    }else{
+                        if(this_index==1){
+                            myScroll.scrollTo(-this_pos_left+this_prev_width,0, _opt.clickScrollTime);
+                        }else if(this_index==_obj_li.length-1){
+                            if(this_off_right-_wrapper_off_right>1||this_off_right-_wrapper_off_right<-1){
+                                myScroll.scrollBy(this_off_right-_wrapper_off_right,0, _opt.clickScrollTime);
+                            }
+                        }else{
+                            if(this_off_left-_wrapper_off_left<duibi){
+                                myScroll.scrollTo(-this_pos_left+this_prev_width,0, _opt.clickScrollTime);
+                            }else if(this_off_right-_wrapper_off_right<duibi){
+                                myScroll.scrollBy(this_off_right-this_next_width-_wrapper_off_right,0, _opt.clickScrollTime);
+                            }
+                        }
+                    }
+                }
+                //$this_obj.addClass(_opt.className).siblings('li').removeClass(_opt.className);
+                _opt.endClickScroll.call(this,$this_obj);
+            }
+        });
+    };
+})(jQuery);

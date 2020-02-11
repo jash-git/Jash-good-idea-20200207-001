@@ -1,0 +1,354 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0094)https://shopping.udn.com/mall/outWebAd_udnCom_rwd.html?&kdid=ERumagedu&cate=W_001_006&device=0 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style type="text/css">
+	body, div , dl , dt , h3 , h4 {
+		margin: 0;
+		padding: 0;
+	}
+	#ec {
+		font: 13px/1.3 微軟正黑體,Arial,Helvetica,sans-serif;
+	}
+	#ec.area {
+		background: none repeat scroll 0 0;
+		/*border: 1px solid #ddd;*/
+		color: #444;
+		margin: 0 0 10px;
+	}
+	#ec.area > h3 {
+		/*border-bottom: 1px solid #d7d7d7;*/
+		line-height: 41px;
+		overflow: hidden;
+		padding: 0 0 0 32px;
+		position: relative;
+		color: #0054a6;
+		letter-spacing: 1px;
+	}
+	
+	#ec.area .header_title{
+		/*border-bottom: 1px solid #d7d7d7;*/
+		line-height: 41px;
+		color: #0054a6;
+		letter-spacing: 1px;
+	  /*width: 750px;*/
+	    width: 78%;
+	    padding: 0 20px;
+		white-space:nowrap;
+	    float:right;
+		overflow: hidden;
+		text-align:center;
+	}
+	#ec.area .header_title_content{
+	    float: left;
+	    width: 50%;
+	    overflow: hidden;
+	}
+	#ec.area .header_title a{
+		padding: 0 10px;
+		color: #0054a6;
+		outline: medium none;
+		text-decoration: none;
+		font-family: 微軟正黑體,Arial,Helvetica,sans-serif;
+	}
+	#ec_body {
+		overflow: hidden;
+		padding: 0px 0px 0px 32px;
+	}
+	#ec_body dt a {
+		display: block;
+		float: left;
+		margin: 0 8px 0 0;
+		width: 158px;
+		color: #444;
+		outline: medium none;
+		text-decoration: none;
+	}
+	#ec_body dt a img {
+		max-width: 100%;
+		width: auto;
+		border-style: none;
+	}
+	#ec_body dt h4 {
+		font-weight: 400;
+		font-size:13px;
+		padding: 8px 0;
+		height: 25px;
+		overflow: hidden;
+		margin-bottom: 15px;
+		font-family: 微軟正黑體,Arial,Helvetica,sans-serif;
+	}
+	#ec_body dt span {
+		color: red;
+		font-weight: bold;
+		padding-top:20px;
+		padding-left:35px;
+		font-size:15px
+	}
+	#ec_body dt span b {
+		color: #999;
+		font-weight: bold;
+		font-family: 微軟正黑體,Arial,Helvetica,sans-serif;
+		font-size:15px
+	}
+	
+	@media (max-width: 1024px) and (min-width: 769px) {
+		#ec_body dt a
+		{
+		  /*width: 160px;*/
+			width: 18%;
+		}
+		#ec_body dt a {
+			margin: 0 12px 0 0;
+		}
+		#ec_body .only_1280 {	
+			display: block;
+		}
+		#ec.area .header_title{
+	      /*width: 500px;*/
+	        width: 70%;
+		    text-align:center;
+		    float: left;
+	    }
+	}
+		
+	@media (max-width: 768px) {
+		#ec.area {
+			margin: 0 10px 10px;
+		}
+		#ec.area > h3 {
+			padding: 0 0 0 10px;
+		}
+		#ec_body {
+			padding: 0;
+		}
+		#ec_body dt a b {
+			display: none;
+		}
+		#ec_body .only_1280 {
+		    display: none;
+		}
+		#ec_body .only_web {
+			display: none!important;
+		}
+		#ec_body dt a {
+			border-bottom: 1px solid #e5e6e8;
+			float: none;
+			margin: 0;
+			min-height: 65px;
+			overflow: hidden;
+			padding: 5px 10px 5px 10px;
+			position: relative;
+			width: auto;
+		}
+		#ec_body dt a h4 {
+			color: #333;
+			font: 18px/1.3 微軟正黑體,Arial,Helvetica,sans-serif;
+			padding: 0;
+			height:45px;
+			overflow: hidden;
+		}
+		#ec_body dt a span {
+			bottom: 10px;
+			left: 100px;
+			position: absolute;
+			font-size:12px;
+		}
+		#ec_body dt a img {
+			float: left;
+			margin: 0 10px 0 0;
+			max-height: 78px;
+			max-width: 120px;
+		}
+		#ec.area .header_title{
+	        display: none!important;
+	    }
+		#ec_body dt:nth-child(4),#ec_body dt:nth-child(5) {
+			display: none;
+		}
+	}
+	</style>
+	
+	<script type="text/javascript" src="./jquery-1.11.2.min.js.下載"></script>
+	<script type="text/javascript" src="./jquery.cookie.js.下載"></script> 
+	
+	<!-- 
+	<script type="text/javascript" src="/mall/js/pc/jquery-1.11.2.min.js?t=20180905095813" ></script>
+	<script type="text/javascript" src="/mall/js/jquery.cookie.js?t=20180905095550"></script>-->
+	<script type="text/javascript">	
+		$(function(){
+			
+			if($.cookie("sessionCnt") == null){
+				$.cookie("sessionCnt", 1);
+			}else{
+				var cnt = parseInt($.cookie("sessionCnt"));
+				cnt +=1;
+				$.cookie("sessionCnt", cnt);
+			}
+			
+			var cate = getUrlParameter('cate');	//銷售分類
+			var kdid = getUrlParameter('kdid');	//channel
+			var kdids = {
+					"recom_product01":"a",
+					"recom_product02":"b",
+					"recom_product03":"c",
+					"recom_product04":"d",
+					"recom_product05":"e",
+					"recom_event01":"d",
+					"recom_event02":"e",
+			};
+			var eruid = $.cookie("__eruid");
+			if(eruid==null){
+				eruid = '00000820-3040-4961-4241-716581ac9173';
+			}
+			var device = getUrlParameter('device');	//裝置類型
+			var sessionCnt = $.cookie("sessionCnt");	//工作階段
+			var url ='https://cym-rec.udn.com/udn_recommendation';
+			
+			$.ajax({
+				type:"GET",
+				url: url,
+				dataType: 'JSON',
+				data: {
+					cate : cate, 
+					eruid : eruid, 
+					session_count : sessionCnt, 
+					device : device,
+					channel : kdid
+				},
+				success : function(data){
+					$.each(data, function(k, v){
+						var json = $.parseJSON(JSON.stringify(v));
+						if(k.indexOf("recom_event") >= 0) {
+							$('#ec_body').append(
+						    		'<dt>'+
+						    		'<a href="' + json.event_url + '&kdid=' + kdid + '-' + kdids[k] + '" title="'+json.dsr+'" target="_blank">'+
+						    		'<img src="' + json.pic + '" ' + 
+						    		' onmousedown="cymmetricsCallBack(event,\'' + eruid + '\',\'' + device + '\',\'' + json.iid + '\',\'' + json.placement + '\',\'' + json.type + '\',\'' + json.matching_status + '\',\'' + kdid + '\',\''+ kdid + '-' + kdids[k] + '\')' + 
+						    		'" />'+
+						    		'<h4>'+json.dsr+'</h4>'+
+						    		'<span><a href="' + json.event_url + '&kdid=' + kdid + '-' + kdids[k] + '" title="'+json.dsr+'" target="_blank"></span>'+
+						    		'</dt>'
+						    );	
+						} else {
+							$('#ec_body').append(
+						    		'<dt>'+
+						    		'<a href="//shopping.udn.com/mall/cus/cat/Cc1c02.do?utm_source=udnnews&utm_medium=cymrec&dc_cargxuid_0='+json.iid+'&dc_cateid_0='+json.cate+'&kdid=' + kdid + '-' + kdids[k] + '" title="'+json.dsr+'" target="_blank">'+
+						    		'<img src="' + json.pic + '" ' + 
+						    		' onmousedown="cymmetricsCallBack(event,\'' + eruid + '\',\'' + device + '\',\'' + json.iid + '\',\'' + json.placement + '\',\'' + json.type + '\',\'' + json.matching_status + '\',\'' + kdid + '\',\''+ kdid + '-' + kdids[k] + '\')' + 
+						    		'" />'+
+						    		'<h4>'+json.dsr+'</h4>'+
+						    		'<span><b>特價</b> $'+json.price+'</span>'+
+						    		'</dt>'
+						    );	
+						}					
+						
+					});
+		    	},
+		    	error : function(XMLHttpRequest, textStatus, errorThrown) {
+					console.log(XMLHttpRequest);
+					console.log(textStatus);
+					console.log(errorThrown);
+		    	}	
+			});
+			
+		});		
+		
+		function cymmetricsCallBack(event, eruid, device, fxuid, placement, type, matching_status, channel, kdid) {
+			var buttonClick = event.button;
+			if(buttonClick == 0 || buttonClick == 1) {
+				var url = 'https://cym-rec.udn.com/udn_recommendation_reply';
+				$.ajax({
+					type : "GET",
+					url : url,
+					dataType : 'JSON',
+					data : {
+						eruid : eruid,
+						device : device,
+						fxuid : fxuid,
+						placement : placement,
+						type : type,
+						matching_status : matching_status,
+						channel : channel,
+						kdid : kdid
+					},
+					success : function(data) {
+						console.log(data);
+					},
+					error : function(XMLHttpRequest, textStatus, errorThrown) {
+						console.log(XMLHttpRequest);
+						console.log(textStatus);
+						console.log(errorThrown);
+					}
+				});					
+			}			
+		}
+
+		function getUrlParameter(sParam) {
+			var sPageURL = decodeURIComponent(window.location.search
+					.substring(1)), sURLVariables = sPageURL.split('&'), sParameterName, i;
+
+			for (i = 0; i < sURLVariables.length; i++) {
+				sParameterName = sURLVariables[i].split('=');
+
+				if (sParameterName[0] === sParam) {
+					return sParameterName[1] === undefined ? true
+							: sParameterName[1];
+				}
+			}
+		};
+	</script>
+	
+<!-- 
+</head>
+<body>-->
+</head><body><div id="ec" class="area">
+	<img src="./logo.jpg" width="95" height="30" border="0" style="padding:5.5px 10px; float:left;">
+        <span class="header_title">
+		      <span class="header_title_content">
+   	               
+   	          </span>	
+   	    </span>
+   	<h3>&nbsp;</h3>
+    <dl id="ec_body">
+		<!-- 
+		<dt class="only_web">
+		<dt class="only_1280"> -->
+		<!-- 
+		<dt>
+			<a href="http://shopping.udn.com/mall/cus/cat/Cc1c04.do?dc_cargxuid_0=U010245821&dc_cateid_0=E_011_004_003&kdid=ERulife-lv&sid=970401_sft01&utm_source=udn&utm_medium=referral_news_sft01&utm_term=LIF01&utm_content=banner&utm_campaign=201401_udn-referral_news_sft" title="【GIGABYTE技嘉】B360M GAMING HD 主機板" target="_blank"  >
+				<img src="http://img.udn.com.tw/image/product/S0002919/APPROVED/U010245821/20180410190126244_135.jpg?t=20180628141251" />
+				<h4>【GIGABYTE技嘉】B360M GAMING HD 主機板</h4>
+				<span><b>特價</b>$2690</span>
+			</a>
+		</dt>
+		<dt>
+			<a href="http://shopping.udn.com/mall/cus/cat/Cc1c04.do?dc_cargxuid_0=U010245821&dc_cateid_0=E_011_004_003&kdid=ERulife-lv&sid=970401_sft01&utm_source=udn&utm_medium=referral_news_sft01&utm_term=LIF01&utm_content=banner&utm_campaign=201401_udn-referral_news_sft" title="【GIGABYTE技嘉】B360M GAMING HD 主機板" target="_blank"  >
+				<img src="http://img.udn.com.tw/image/product/S0002919/APPROVED/U010245821/20180410190126244_135.jpg?t=20180628141251" />
+				<h4>【GIGABYTE技嘉】B360M GAMING HD 主機板</h4>
+				<span><b>特價</b>$2690</span>
+			</a>
+		</dt>
+		<dt>
+			<a href="http://shopping.udn.com/mall/cus/cat/Cc1c04.do?dc_cargxuid_0=U010245821&dc_cateid_0=E_011_004_003&kdid=ERulife-lv&sid=970401_sft01&utm_source=udn&utm_medium=referral_news_sft01&utm_term=LIF01&utm_content=banner&utm_campaign=201401_udn-referral_news_sft" title="【GIGABYTE技嘉】B360M GAMING HD 主機板" target="_blank"  >
+				<img src="http://img.udn.com.tw/image/product/S0002919/APPROVED/U010245821/20180410190126244_135.jpg?t=20180628141251" />
+				<h4>【GIGABYTE技嘉】B360M GAMING HD 主機板</h4>
+				<span><b>特價</b>$2690</span>
+			</a>
+		</dt>
+		<dt>
+			<a href="http://shopping.udn.com/mall/cus/cat/Cc1c04.do?dc_cargxuid_0=U010245821&dc_cateid_0=E_011_004_003&kdid=ERulife-lv&sid=970401_sft01&utm_source=udn&utm_medium=referral_news_sft01&utm_term=LIF01&utm_content=banner&utm_campaign=201401_udn-referral_news_sft" title="【GIGABYTE技嘉】B360M GAMING HD 主機板" target="_blank"  >
+				<img src="http://img.udn.com.tw/image/product/S0002919/APPROVED/U010245821/20180410190126244_135.jpg?t=20180628141251" />
+				<h4>【GIGABYTE技嘉】B360M GAMING HD 主機板</h4>
+				<span><b>特價</b>$2690</span>
+			</a>
+		</dt>
+		 -->
+    <dt><a href="https://shopping.udn.com/mall/cus/cat/Cc1c02.do?utm_source=udnnews&amp;utm_medium=cymrec&amp;dc_cargxuid_0=U010568826&amp;dc_cateid_0=0_056_006_023_003&amp;kdid=ERumagedu-a" title="【Daima黛瑪】MIT機能型-軟鋼圈貼身無痕紓壓吸濕排汗成套內衣_膚" target="_blank"><img src="./20190614150339871_135.jpg" onmousedown="cymmetricsCallBack(event,&#39;00000820-3040-4961-4241-716581ac9173&#39;,&#39;0&#39;,&#39;U010568826&#39;,&#39;01_00&#39;,&#39;topn_00&#39;,&#39;1&#39;,&#39;ERumagedu&#39;,&#39;ERumagedu-a&#39;)"><h4>【Daima黛瑪】MIT機能型-軟鋼圈貼身無痕紓壓吸濕排汗成套內衣_膚</h4><span><b>特價</b> $990</span></a></dt><dt><a href="https://shopping.udn.com/mall/cus/cat/Cc1c02.do?utm_source=udnnews&amp;utm_medium=cymrec&amp;dc_cargxuid_0=U010076905&amp;dc_cateid_0=C_007_008_006_002&amp;kdid=ERumagedu-b" title="HI-TEC 英國戶外NO.1-(女)郊山健行中筒靴O004475043" target="_blank"><img src="./20170914151334182_135.jpg" onmousedown="cymmetricsCallBack(event,&#39;00000820-3040-4961-4241-716581ac9173&#39;,&#39;0&#39;,&#39;U010076905&#39;,&#39;01_01&#39;,&#39;topn_01&#39;,&#39;1&#39;,&#39;ERumagedu&#39;,&#39;ERumagedu-b&#39;)"><h4>HI-TEC 英國戶外NO.1-(女)郊山健行中筒靴O004475043</h4><span><b>特價</b> $827</span></a></dt><dt><a href="https://shopping.udn.com/mall/cus/cat/Cc1c02.do?utm_source=udnnews&amp;utm_medium=cymrec&amp;dc_cargxuid_0=U010662489&amp;dc_cateid_0=Z_004_012_002&amp;kdid=ERumagedu-c" title="【MOTEX 摩戴舒】掛帶平面型口罩任選 10盒組(30片/盒，共300片)" target="_blank"><img src="./20191112130221719_135.jpg" onmousedown="cymmetricsCallBack(event,&#39;00000820-3040-4961-4241-716581ac9173&#39;,&#39;0&#39;,&#39;U010662489&#39;,&#39;01_02&#39;,&#39;topn_02&#39;,&#39;1&#39;,&#39;ERumagedu&#39;,&#39;ERumagedu-c&#39;)"><h4>【MOTEX 摩戴舒】掛帶平面型口罩任選 10盒組(30片/盒，共300片)</h4><span><b>特價</b> $849</span></a></dt><dt><a href="https://shopping.udn.com/mall/cus/cat/Cc1c02.do?utm_source=udnnews&amp;utm_medium=cymrec&amp;dc_cargxuid_0=U010380660&amp;dc_cateid_0=C_001_012_033_009&amp;kdid=ERumagedu-d" title="Olivia奧莉精品 典雅仕女蕾絲收腰傘擺洋裝 M~3XL 蕾絲 洋裝 連身裙 禮服 伴娘服 媽媽裝" target="_blank"><img src="./20180925222303890_135.JPG" onmousedown="cymmetricsCallBack(event,&#39;00000820-3040-4961-4241-716581ac9173&#39;,&#39;0&#39;,&#39;U010380660&#39;,&#39;01_03&#39;,&#39;topn_03&#39;,&#39;1&#39;,&#39;ERumagedu&#39;,&#39;ERumagedu-d&#39;)"><h4>Olivia奧莉精品 典雅仕女蕾絲收腰傘擺洋裝 M~3XL 蕾絲 洋裝 連身裙 禮服 伴娘服 媽媽裝</h4><span><b>特價</b> $890</span></a></dt><dt><a href="https://shopping.udn.com/mall/cus/cat/Cc1c02.do?utm_source=udnnews&amp;utm_medium=cymrec&amp;dc_cargxuid_0=U010299264&amp;dc_cateid_0=N_006_009_001_005&amp;kdid=ERumagedu-e" title="SHOPRIDER TE-889XLSN Cabin電動代步車(全罩式車款)" target="_blank"><img src="./20180612094553325_135.jpg" onmousedown="cymmetricsCallBack(event,&#39;00000820-3040-4961-4241-716581ac9173&#39;,&#39;0&#39;,&#39;U010299264&#39;,&#39;01_04&#39;,&#39;topn_04&#39;,&#39;1&#39;,&#39;ERumagedu&#39;,&#39;ERumagedu-e&#39;)"><h4>SHOPRIDER TE-889XLSN Cabin電動代步車(全罩式車款)</h4><span><b>特價</b> $168000</span></a></dt></dl>
+    <!-- /#ec_body -->
+</div>
+<!-- /#ec -->
+
+<!-- track code -->
+<!-- <jsp:include page="/cus/adv/outWebAd_trackcode.jsp" /> -->
+<!-- </body>
+</html> -->
+</body></html>
